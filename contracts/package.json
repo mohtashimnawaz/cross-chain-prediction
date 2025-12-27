@@ -9,10 +9,14 @@
     "hardhat": "^2.12.6"
   },
   "scripts": {
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "node": "hardhat node",
+    "deploy:localhost": "hardhat run --network localhost scripts/deploy_adapter.js",
+    "deploy:hardhat": "hardhat run --network hardhat scripts/deploy_adapter.js"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.4.0",
+    "node-fetch": "^2.7.0",
     "solc": "^0.8.33"
   }
 }
