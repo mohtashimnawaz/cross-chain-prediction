@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { ethers } from 'ethers'
-import { Connection, PublicKey } from '@solana/web3.js'
+import { Connection } from '@solana/web3.js'
 
 type WalletContextType = {
   ethAddress: string | null
@@ -11,8 +11,7 @@ type WalletContextType = {
   connectPhantom: () => Promise<void>
 }
 
-const DEFAULT_RPC = process.env.VITE_SOLANA_RPC || 'http://localhost:8899'
-const DEFAULT_PROGRAM = process.env.VITE_PREDICTION_PROGRAM_ID || 'Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkgSgK6z7uJc'
+const DEFAULT_RPC = process.env.NEXT_PUBLIC_SOLANA_RPC || 'http://localhost:8899'
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined)
 
@@ -24,7 +23,6 @@ export const WalletProvider: React.FC<{ children?: React.ReactNode }> = ({ child
   const solConnection = new Connection(DEFAULT_RPC, 'confirmed')
 
   useEffect(() => {
-    // detect already connected wallets
     const anyWindow = window as any
     if (anyWindow?.ethereum && anyWindow.ethereum.selectedAddress) {
       setEthAddress(anyWindow.ethereum.selectedAddress)

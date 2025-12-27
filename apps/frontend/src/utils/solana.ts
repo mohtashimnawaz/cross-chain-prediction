@@ -4,7 +4,6 @@ import { PublicKey, Connection } from '@solana/web3.js'
 const ANCHOR_DISCRIMINATOR = 8
 
 function readUint128LE(buf: Buffer, offset: number) {
-  // 16 bytes little endian to BigInt
   let res = 0n
   for (let i = 0; i < 16; i++) {
     res |= BigInt(buf[offset + i]) << BigInt(8 * i)
@@ -47,7 +46,6 @@ export function decodeMarketAccount(pubkey: PublicKey, data: Buffer): Market {
 }
 
 export async function fetchMarkets(connection: Connection, programId: PublicKey) {
-  // Filter by data size (approx: 8 discriminator + MarketAccount size)
   const ACC_SIZE = 8 + 81
   const accounts = await connection.getProgramAccounts(programId, { filters: [{ dataSize: ACC_SIZE }] })
   return accounts.map(acc => decodeMarketAccount(acc.pubkey, Buffer.from(acc.account.data)))

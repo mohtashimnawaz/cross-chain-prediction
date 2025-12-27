@@ -4,7 +4,7 @@ import { useWallet } from '../contexts/WalletContext'
 import { fetchMarkets, Market } from '../utils/solana'
 import MarketDetail from './MarketDetail'
 
-const DEFAULT_PROGRAM_ID = 'Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkgSgK6z7uJc'
+const DEFAULT_PROGRAM_ID = process.env.NEXT_PUBLIC_PREDICTION_PROGRAM_ID || 'Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkgSgK6z7uJc'
 
 export default function MarketList() {
   const { solConnection } = useWallet()

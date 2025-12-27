@@ -1,10 +1,14 @@
-import React from 'react'
-import WalletConnect from './components/WalletConnect'
-import MarketList from './components/MarketList'
+import Head from 'next/head'
+import WalletConnect from '../components/WalletConnect'
+import MarketList from '../components/MarketList'
 
-export default function App() {
+export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
+      <Head>
+        <title>Prediction Market — Frontend</title>
+      </Head>
+
       <header className="max-w-4xl mx-auto p-6">
         <h1 className="text-2xl font-bold">Prediction Market — Frontend (Prototype)</h1>
         <p className="text-sm text-gray-600 mt-1">Demo UI for placing cross-chain bets (EVM → Solana)</p>

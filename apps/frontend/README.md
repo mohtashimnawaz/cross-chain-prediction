@@ -1,4 +1,4 @@
-# Prediction Market — Frontend (Prototype)
+# Prediction Market — Frontend (Next.js Prototype)
 
 Quick start:
 
@@ -7,11 +7,10 @@ Quick start:
 3. npm run dev
 
 What this scaffold includes:
-- Vite + React + TypeScript
+- Next.js + React + TypeScript
 - Tailwind CSS config
-- Basic `WalletConnect` component for MetaMask (EVM) and Phantom (Solana)
+- `WalletContext` for MetaMask (EVM) and Phantom (Solana)
+- Market list that reads `MarketAccount` from the Anchor program
 
-Next steps (ideas):
-- Integrate with `contracts/PredictionMarketAdapter.sol` to place cross-chain bets
-- Read markets from the Anchor program on Solana and show market details
-- Add tests and CI workflow
+Notes:
+- To test locally, run a local Solana validator and deploy the program (see `e2e/README.md`), and optionally run a Hardhat node for EVM interactions.
