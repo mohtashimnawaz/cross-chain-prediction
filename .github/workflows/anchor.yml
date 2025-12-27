@@ -59,3 +59,52 @@ jobs:
       - name: Run Foundry tests (if present)
         working-directory: ./contracts
         run: forge test --match-contract PredictionMarketAdapter || true
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+    needs: evm-tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install frontend deps
+        working-directory: ./apps/frontend
+        run: npm ci
+      - name: Run frontend tests
+        working-directory: ./apps/frontend
+        run: npm test --silent
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [evm-tests, build]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Start Hardhat node
+        working-directory: ./contracts
+        run: |
+          nohup npx hardhat node > hh.log 2>&1 &
+          sleep 3
+          cat hh.log | sed -n '1,200p'
+      - name: Deploy adapter to localhost
+        working-directory: ./contracts
+        run: npx hardhat run --network localhost scripts/deploy_adapter.js
+      - name: Generate compose message
+        working-directory: ./contracts
+        run: npx hardhat run scripts/generate_compose.js
+      - name: Run Anchor E2E test
+        env:
+          ANCHOR_WALLET: /root/.config/solana/id.json
+        working-directory: ./programs/prediction_market
+        run: |
+          npm install
+          anchor test
+      - name: Stop Hardhat node
+        run: |
+          pkill -f 'hardhat node' || true
+          sleep 1

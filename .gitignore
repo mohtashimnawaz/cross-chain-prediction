@@ -57,3 +57,5 @@ __pycache__/
 # Local scripts output
 scripts/*.out
 scripts/*.log
+
+.next/
