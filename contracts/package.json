@@ -12,7 +12,8 @@
     "test": "hardhat test",
     "node": "hardhat node",
     "deploy:localhost": "hardhat run --network localhost scripts/deploy_adapter.js",
-    "deploy:hardhat": "hardhat run --network hardhat scripts/deploy_adapter.js"
+    "deploy:hardhat": "hardhat run --network hardhat scripts/deploy_adapter.js",
+    "e2e:dev": "bash ../scripts/e2e_dev.sh"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.4.0",

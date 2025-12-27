@@ -14,6 +14,7 @@ Quick commands
   - `anchor test`
 - Run EVM tests (Hardhat):
   - `cd contracts && npm ci && npm test`
+  - Or run the full local E2E flow (start node, deploy, generate compose, run Anchor tests): `cd contracts && npm run e2e:dev`
 
 CI
 - GitHub Actions has jobs to build and test the Anchor program and run EVM tests. See `.github/workflows/anchor.yml`.
