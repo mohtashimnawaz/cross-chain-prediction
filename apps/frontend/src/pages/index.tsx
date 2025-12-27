@@ -4,6 +4,8 @@ import MarketList from '../components/MarketList'
 import PlaceBet from '../components/PlaceBet'
 
 export default function Home() {
+  const [selectedMarket, setSelectedMarket] = React.useState<{ marketId?: number, outcome?: number } | undefined>(undefined)
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       <Head>
@@ -31,7 +33,7 @@ export default function Home() {
             <h2 className="font-semibold text-lg">Markets</h2>
             <p className="text-sm text-gray-500 mt-1">On-chain markets discovered by scanning the program accounts. Tap a card for details.</p>
             <div className="mt-4">
-              <MarketList onSelectMarket={(m)=>{ /* noop for now */ }} />
+              <MarketList onSelectMarket={(m)=>{ setSelectedMarket({ marketId: m.marketId, outcome: Number(m.outcomes[1]) > Number(m.outcomes[0]) ? 1 : 0 }) }} />
             </div>
           </section>
         </aside>
@@ -41,7 +43,7 @@ export default function Home() {
             <h2 className="font-medium">Place a Bet</h2>
             <p className="text-sm text-gray-500">Quickly encode and send a cross-chain bet via the adapter.</p>
             <div className="mt-3">
-              <PlaceBet />
+              <PlaceBet defaultMarket={selectedMarket} />
             </div>
           </section>
         </aside>

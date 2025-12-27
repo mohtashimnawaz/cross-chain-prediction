@@ -5,6 +5,7 @@ This project demonstrates a cross-chain flow where an EVM user sends native USDC
 Structure
 - `programs/prediction_market` — Anchor (Solana) program implementing `initialize_market` and `lz_compose` and tests.
 - `contracts/` — Solidity `PredictionMarketAdapter.sol` (OFT adapter) + Hardhat tests that validate encoding & event emission.
+- `apps/frontend` — Next.js + TypeScript + Tailwind frontend (improved UI: header, dynamic market list, skeleton loading, progress bars).
 - `docs/INTEGRATION.md` — Integration notes for PDA derivation, compose message format, and security guidance.
 - `scripts/derive_vault.js` — utility to derive vault PDA and print bytes32 for use on EVM side.
 

@@ -14,3 +14,4 @@ What this scaffold includes:
 
 Notes:
 - To test locally, run a local Solana validator and deploy the program (see `e2e/README.md`), and optionally run a Hardhat node for EVM interactions.
+- The UI now includes a dynamic market list with a fallback `public/markets.json` used when no on-chain markets are found, skeleton loading states, progress bars, and improved header and Place Bet layout for a better dev UX.

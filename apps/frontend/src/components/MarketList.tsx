@@ -6,7 +6,7 @@ import MarketDetail from './MarketDetail'
 
 const DEFAULT_PROGRAM_ID = process.env.NEXT_PUBLIC_PREDICTION_PROGRAM_ID || 'Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkgSgK6z7uJc'
 
-export default function MarketList() {
+export default function MarketList({ onSelectMarket } : { onSelectMarket?: (m: Market)=>void }) {
   const { solConnection } = useWallet()
   const [markets, setMarkets] = useState<Market[]>([])
   const [loading, setLoading] = useState(false)
@@ -17,6 +17,25 @@ export default function MarketList() {
     try {
       const programId = new PublicKey(DEFAULT_PROGRAM_ID)
       const ms = await fetchMarkets(solConnection, programId)
+      if (ms.length === 0) {
+        // fallback to local sample markets.json for a nicer dev experience
+        try {
+          const j = await fetch('/markets.json').then(r => r.json())
+          const mapped = j.map((s: any) => ({
+            pubkey: new PublicKey(s.pubkey),
+            marketId: Number(s.marketId),
+            outcomes: [BigInt(s.outcomes[0]), BigInt(s.outcomes[1])],
+            vault: new PublicKey(s.vault),
+            vaultBump: Number(s.vaultBump),
+            vaultBalance: BigInt(s.vaultBalance),
+          }))
+          setMarkets(mapped)
+          return
+        } catch (e2) {
+          // ignore fallback errors
+          console.info('fallback markets failed', e2)
+        }
+      }
       setMarkets(ms)
     } catch (e) {
       console.error(e)
@@ -53,7 +72,7 @@ export default function MarketList() {
           const total = a + b
           const pctB = total === 0n ? 50 : Number((b * 100n) / total)
           return (
-            <div key={m.pubkey.toBase58()} className="p-4 rounded bg-white card cursor-pointer" onClick={() => setSelected(m)}>
+            <div key={m.pubkey.toBase58()} className="p-4 rounded bg-white card cursor-pointer" onClick={() => { setSelected(m); onSelectMarket?.(m) }}>
               <div className="flex gap-3">
                 <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
                   <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.6 4.1 2 7L12 16l-6.4 4.1 2-7L2 9h7l3-7z" fill="#e6e9f2"/></svg>
