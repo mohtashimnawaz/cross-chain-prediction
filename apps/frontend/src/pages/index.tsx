@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import WalletConnect from '../components/WalletConnect'
 import MarketList from '../components/MarketList'
+import PlaceBet from '../components/PlaceBet'
 
 export default function Home() {
   return (
@@ -24,6 +25,7 @@ export default function Home() {
           <p className="text-sm text-gray-500">Below are on-chain markets discovered by scanning the program's accounts.</p>
           <div className="mt-4">
             <MarketList />
+            <PlaceBet />
           </div>
         </section>
       </main>
