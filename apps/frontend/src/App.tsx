@@ -1,5 +1,6 @@
 import React from 'react'
 import WalletConnect from './components/WalletConnect'
+import MarketList from './components/MarketList'
 
 export default function App() {
   return (
@@ -15,8 +16,11 @@ export default function App() {
         </section>
 
         <section className="p-4 border rounded bg-white">
-          <h2 className="font-medium">Market List (stub)</h2>
-          <p className="text-sm text-gray-500">Markets will be listed here (read from Solana program).</p>
+          <h2 className="font-medium">Market List</h2>
+          <p className="text-sm text-gray-500">Below are on-chain markets discovered by scanning the program's accounts.</p>
+          <div className="mt-4">
+            <MarketList />
+          </div>
         </section>
       </main>
     </div>
