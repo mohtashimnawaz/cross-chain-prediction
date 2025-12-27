@@ -23,3 +23,5 @@ Notes
 - For Anchor tests you need the Solana CLI and Anchor CLI installed. If `@project-serum/anchor` cannot be fetched via npm in your environment, run Anchor's Rust tests (`anchor test`) using the installed Anchor CLI.
 
 If you'd like, I can try to run the EVM tests in CI and fix any failures reported there.
+
+CI: This branch will run the full test matrix (Anchor + EVM).
