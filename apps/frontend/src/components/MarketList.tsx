@@ -31,32 +31,68 @@ export default function MarketList() {
   return (
     <div className="mt-6">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="font-medium">Markets</h2>
-        <div className="flex gap-2">
-          <button onClick={load} className="px-2 py-1 bg-gray-200 rounded">Refresh</button>
+        <h2 className="font-medium text-lg">Available Markets</h2>
+        <div className="flex gap-2 items-center">
+          <button onClick={load} className="px-3 py-1 bg-gray-100 rounded border">Refresh</button>
           <div className="text-sm text-gray-500">{loading ? 'Loading…' : `${markets.length} markets`}</div>
         </div>
       </div>
 
-      <div className="grid gap-3">
-        {markets.map(m => (
-          <div key={m.pubkey.toBase58()} className="p-3 bg-white border rounded hover:shadow cursor-pointer" onClick={() => setSelected(m)}>
-            <div className="flex justify-between">
-              <div>Market #{m.marketId}</div>
-              <div className="text-sm text-gray-500">Vault: {m.vault.toBase58().slice(0,6)}…</div>
-            </div>
-            <div className="text-sm text-gray-600 mt-2">Outcome 0: {m.outcomes[0].toString()} • Outcome 1: {m.outcomes[1].toString()}</div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {loading && Array.from({length:4}).map((_,i)=>(
+          <div key={i} className="p-4 rounded bg-white card">
+            <div className="h-36 rounded skeleton"></div>
+            <div className="mt-3 h-4 w-3/4 skeleton rounded"></div>
+            <div className="mt-2 h-3 w-1/2 skeleton rounded"></div>
           </div>
         ))}
 
+        {!loading && markets.map(m => {
+          const a = BigInt(m.outcomes[0])
+          const b = BigInt(m.outcomes[1])
+          const total = a + b
+          const pctB = total === 0n ? 50 : Number((b * 100n) / total)
+          return (
+            <div key={m.pubkey.toBase58()} className="p-4 rounded bg-white card cursor-pointer" onClick={() => setSelected(m)}>
+              <div className="flex gap-3">
+                <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.6 4.1 2 7L12 16l-6.4 4.1 2-7L2 9h7l3-7z" fill="#e6e9f2"/></svg>
+                </div>
+                <div className="flex-1">
+                  <div className="flex justify-between items-start">
+                    <div className="font-medium">Market #{m.marketId}</div>
+                    <div className="text-xs text-gray-400">Vault: {m.vault.toBase58().slice(0,6)}…</div>
+                  </div>
+
+                  <div className="mt-3">
+                    <div className="text-xs text-gray-500">Outcome 0</div>
+                    <div className="text-sm font-medium">{m.outcomes[0].toString()}</div>
+                  </div>
+                  <div className="mt-2">
+                    <div className="text-xs text-gray-500">Outcome 1</div>
+                    <div className="text-sm font-medium">{m.outcomes[1].toString()}</div>
+                  </div>
+
+                  <div className="mt-3">
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="progress-filled" style={{ width: `${pctB}%` }} />
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">Outcome 1: {pctB}%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+
         {selected && (
-          <div className="mt-4">
+          <div className="mt-4 md:col-span-2">
             <MarketDetail market={selected} onClose={() => setSelected(null)} onRefresh={load} />
           </div>
         )}
 
-        {markets.length === 0 && !loading && (
-          <div className="text-sm text-gray-500">No markets found (make sure local Solana validator is running and program is deployed).</div>
+        {!loading && markets.length === 0 && (
+          <div className="text-sm text-gray-500">No markets found — loading fallback local sample data.</div>
         )}
       </div>
     </div>

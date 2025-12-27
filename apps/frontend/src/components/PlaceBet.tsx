@@ -3,7 +3,7 @@ import { ethers } from 'ethers'
 import { useWallet } from '../contexts/WalletContext'
 import { getAdapterContract } from '../utils/evm'
 
-export default function PlaceBet() {
+export default function PlaceBet({ defaultMarket } : { defaultMarket?: { marketId?: number, outcome?: number } } = {}) {
   const { ethProvider } = useWallet()
   const [contractAddr, setContractAddr] = useState(process.env.NEXT_PUBLIC_ADAPTER_ADDRESS || '')
 
@@ -16,16 +16,32 @@ export default function PlaceBet() {
   }, [])
   const [dstEid, setDstEid] = useState<number>(101)
   const [amount, setAmount] = useState<string>('100')
-  const [marketId, setMarketId] = useState<number>(42)
-  const [outcome, setOutcome] = useState<number>(1)
+  const [marketId, setMarketId] = useState<number>(defaultMarket?.marketId ?? 42)
+  const [outcome, setOutcome] = useState<number>(defaultMarket?.outcome ?? 1)
   const [toPdaHex, setToPdaHex] = useState<string>('0x' + '00'.repeat(32))
   const [txHash, setTxHash] = useState<string | null>(null)
   const [composeHex, setComposeHex] = useState<string | null>(null)
   const [status, setStatus] = useState<string | null>(null)
 
+  function copyToClipboard(text: string){
+    navigator.clipboard?.writeText(text).then(()=>{
+      setStatus('Copied to clipboard')
+    }).catch(()=>{
+      setStatus('Copy failed')
+    })
+  }
+
+  function validateInputs(){
+    if (!contractAddr) return 'Adapter address required'
+    if (Number(amount) <= 0) return 'Amount must be > 0'
+    if (!Number.isInteger(marketId)) return 'Market ID must be an integer'
+    if (!Number.isInteger(outcome)) return 'Outcome must be an integer'
+    return null
+  }
+
   async function handleEncode() {
-    if (!ethProvider) return alert('Connect MetaMask')
-    if (!contractAddr) return alert('Set adapter contract address')
+    const v = validateInputs(); if (v) return setStatus(v)
+    if (!ethProvider) return setStatus('Connect MetaMask')
     try {
       setStatus('Encoding compose message…')
       const signer = ethProvider.getSigner()
@@ -40,8 +56,8 @@ export default function PlaceBet() {
   }
 
   async function handlePlaceBet() {
-    if (!ethProvider) return alert('Connect MetaMask')
-    if (!contractAddr) return alert('Set adapter contract address')
+    const v = validateInputs(); if (v) return setStatus(v)
+    if (!ethProvider) return setStatus('Connect MetaMask')
     try {
       setStatus('Sending transaction…')
       const signer = ethProvider.getSigner()
@@ -65,37 +81,54 @@ export default function PlaceBet() {
   }
 
   return (
-    <div className="p-4 border rounded bg-white mt-4">
-      <h3 className="font-medium mb-2">Place Bet (EVM)</h3>
-      <div className="grid grid-cols-2 gap-2">
-        <label className="text-sm">Adapter Contract Address
-          <input value={contractAddr} onChange={e=>setContractAddr(e.target.value)} className="ml-2 p-1 border rounded w-full" />
-        </label>
-        <label className="text-sm">Destination Chain ID
-          <input type="number" value={dstEid} onChange={e=>setDstEid(Number(e.target.value))} className="ml-2 p-1 border rounded w-full" />
-        </label>
-        <label className="text-sm">Amount (USDC, 6 decimals)
-          <input value={amount} onChange={e=>setAmount(e.target.value)} className="ml-2 p-1 border rounded w-full" />
-        </label>
-        <label className="text-sm">Market ID
-          <input type="number" value={marketId} onChange={e=>setMarketId(Number(e.target.value))} className="ml-2 p-1 border rounded w-full" />
-        </label>
-        <label className="text-sm">Outcome
-          <input type="number" value={outcome} onChange={e=>setOutcome(Number(e.target.value))} className="ml-2 p-1 border rounded w-full" />
-        </label>
-        <label className="text-sm">Solana PDA (bytes32 hex)
-          <input value={toPdaHex} onChange={e=>setToPdaHex(e.target.value)} className="ml-2 p-1 border rounded w-full" />
-        </label>
+    <div className="p-4 rounded bg-white">
+      <div className="flex items-center justify-between">
+        <h3 className="font-medium mb-2">Place Bet (EVM)</h3>
+        <div className="text-sm text-gray-500">Status: {status ?? 'idle'}</div>
       </div>
 
-      <div className="mt-3 flex gap-2">
-        <button onClick={handleEncode} className="px-3 py-1 bg-gray-200 rounded">Encode composeMsg</button>
-        <button onClick={handlePlaceBet} className="px-3 py-1 bg-indigo-600 text-white rounded">Place Bet</button>
-      </div>
+      <div className="grid grid-cols-1 gap-3">
+        <div>
+          <label className="text-sm block">Adapter Contract Address</label>
+          <input value={contractAddr} onChange={e=>setContractAddr(e.target.value)} className="mt-1 p-2 border rounded w-full" placeholder="0x..." />
+        </div>
 
-      <div className="mt-3 text-sm text-gray-600">Status: {status ?? 'idle'}</div>
-      {txHash && <div className="mt-2 text-sm">Tx: <a target="_blank" rel="noreferrer" href={`https://etherscan.io/tx/${txHash}`}>{txHash}</a></div>}
-      {composeHex && <div className="mt-2 text-sm break-all">ComposeBytes: {composeHex}</div>}
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-sm block">Amount (USDC)</label>
+            <input value={amount} onChange={e=>setAmount(e.target.value)} className="mt-1 p-2 border rounded w-full" />
+          </div>
+          <div>
+            <label className="text-sm block">Destination Chain ID</label>
+            <input type="number" value={dstEid} onChange={e=>setDstEid(Number(e.target.value))} className="mt-1 p-2 border rounded w-full" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-sm block">Market ID</label>
+            <input type="number" value={marketId} onChange={e=>setMarketId(Number(e.target.value))} className="mt-1 p-2 border rounded w-full" />
+          </div>
+          <div>
+            <label className="text-sm block">Outcome</label>
+            <input type="number" value={outcome} onChange={e=>setOutcome(Number(e.target.value))} className="mt-1 p-2 border rounded w-full" />
+          </div>
+        </div>
+
+        <div>
+          <label className="text-sm block">Solana PDA (bytes32 hex)</label>
+          <input value={toPdaHex} onChange={e=>setToPdaHex(e.target.value)} className="mt-1 p-2 border rounded w-full" />
+        </div>
+
+        <div className="flex gap-2">
+          <button onClick={handleEncode} className="px-4 py-2 bg-gray-100 rounded border">Encode</button>
+          <button onClick={handlePlaceBet} className="px-4 py-2 bg-indigo-600 text-white rounded">Place Bet</button>
+          {composeHex && <button onClick={()=>copyToClipboard(composeHex)} className="px-3 py-2 bg-gray-50 rounded border">Copy</button>}
+        </div>
+
+        {txHash && <div className="text-sm">Tx: <a target="_blank" rel="noreferrer" href={`https://etherscan.io/tx/${txHash}`}>{txHash}</a></div>}
+        {composeHex && <pre className="mt-2 p-3 bg-gray-100 rounded text-sm break-all">{composeHex}</pre>}
+      </div>
     </div>
   )
 }

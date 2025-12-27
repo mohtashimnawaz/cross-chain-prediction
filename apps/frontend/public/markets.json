@@ -1,0 +1,18 @@
+[
+  {
+    "pubkey": "6t5o2sGZp1vXw3cKx1mR2rQf1X9bQ2Yxj6aV9kJmG8sP",
+    "marketId": 42,
+    "outcomes": ["120000000000000000000","80000000000000000000"],
+    "vault": "Gb2gkQx2v6kY2xq8n3yXj7cRr5Zq2b5H1kP9z7nY4cA6",
+    "vaultBump": 255,
+    "vaultBalance": "1000000"
+  },
+  {
+    "pubkey": "Fq7o3sJd9mXx2b6nR1uW9rXb6cYp1v2zP8aV6kPqL0tS",
+    "marketId": 43,
+    "outcomes": ["50000000000000000000","150000000000000000000"],
+    "vault": "9mG8sP6t5o2sGZp1vXw3cKx1mR2rQf1X9bQ2Yxj6aV",
+    "vaultBump": 254,
+    "vaultBalance": "2500000"
+  }
+]
