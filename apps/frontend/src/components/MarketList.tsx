@@ -21,14 +21,28 @@ export default function MarketList({ onSelectMarket } : { onSelectMarket?: (m: M
         // fallback to local sample markets.json for a nicer dev experience
         try {
           const j = await fetch('/markets.json').then(r => r.json())
-          const mapped = j.map((s: any) => ({
-            pubkey: new PublicKey(s.pubkey),
-            marketId: Number(s.marketId),
-            outcomes: [BigInt(s.outcomes[0]), BigInt(s.outcomes[1])],
-            vault: new PublicKey(s.vault),
-            vaultBump: Number(s.vaultBump),
-            vaultBalance: BigInt(s.vaultBalance),
-          }))
+          const mapped = j.map((s: any) => {
+            try {
+              return {
+                pubkey: new PublicKey(s.pubkey),
+                marketId: Number(s.marketId),
+                outcomes: [BigInt(s.outcomes[0]), BigInt(s.outcomes[1])],
+                vault: new PublicKey(s.vault),
+                vaultBump: Number(s.vaultBump),
+                vaultBalance: BigInt(s.vaultBalance),
+              }
+            } catch (err) {
+              // If any value is invalid (e.g., base58), fall back to a safe placeholder using program id
+              return {
+                pubkey: new PublicKey(DEFAULT_PROGRAM_ID),
+                marketId: Number(s.marketId) || 0,
+                outcomes: [BigInt(s.outcomes?.[0] || 0n), BigInt(s.outcomes?.[1] || 0n)],
+                vault: new PublicKey(DEFAULT_PROGRAM_ID),
+                vaultBump: Number(s.vaultBump) || 0,
+                vaultBalance: BigInt(s.vaultBalance || 0n),
+              }
+            }
+          })
           setMarkets(mapped)
           return
         } catch (e2) {
@@ -53,6 +67,20 @@ export default function MarketList({ onSelectMarket } : { onSelectMarket?: (m: M
         <h2 className="font-medium text-lg">Available Markets</h2>
         <div className="flex gap-2 items-center">
           <button onClick={load} className="px-3 py-1 bg-gray-100 rounded border">Refresh</button>
+          <button onClick={async ()=>{
+            try {
+              const j = await fetch('/markets.json').then(r=>r.json());
+              const mapped = j.map((s:any)=>({
+                pubkey: new PublicKey((s.pubkey) || DEFAULT_PROGRAM_ID),
+                marketId: Number(s.marketId),
+                outcomes: [BigInt(s.outcomes[0]), BigInt(s.outcomes[1])],
+                vault: new PublicKey((s.vault) || DEFAULT_PROGRAM_ID),
+                vaultBump: Number(s.vaultBump),
+                vaultBalance: BigInt(s.vaultBalance),
+              }))
+              setMarkets(mapped)
+            } catch (e) { console.error('load sample failed', e) }
+          }} className="px-3 py-1 bg-gray-50 rounded border">Load sample</button>
           <div className="text-sm text-gray-500">{loading ? 'Loading…' : `${markets.length} markets`}</div>
         </div>
       </div>

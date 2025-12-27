@@ -1,0 +1,7 @@
+{
+  "name": "cross-chain-prediction",
+  "private": true,
+  "scripts": {
+    "init-market": "node ./scripts/init_market.js"
+  }
+}
