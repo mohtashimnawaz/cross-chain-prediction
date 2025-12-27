@@ -5,7 +5,15 @@ import { getAdapterContract } from '../utils/evm'
 
 export default function PlaceBet() {
   const { ethProvider } = useWallet()
-  const [contractAddr, setContractAddr] = useState('')
+  const [contractAddr, setContractAddr] = useState(process.env.NEXT_PUBLIC_ADAPTER_ADDRESS || '')
+
+  // Try runtime public file as fallback (no restart required)
+  React.useEffect(()=>{
+    if (contractAddr) return
+    fetch('/deployed.json').then(r=>r.json()).then(j=>{
+      if (j?.adapterAddress) setContractAddr(j.adapterAddress)
+    }).catch(()=>{})
+  }, [])
   const [dstEid, setDstEid] = useState<number>(101)
   const [amount, setAmount] = useState<string>('100')
   const [marketId, setMarketId] = useState<number>(42)
