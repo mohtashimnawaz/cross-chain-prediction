@@ -23,11 +23,19 @@ async function main() {
   if (network === 'localhost') {
     const url = (hre.network.config && hre.network.config.url) || 'http://127.0.0.1:8545';
     console.log(`Waiting for local node at ${url}...`);
-    const ok = await waitForRpc(url);
-    if (!ok) {
-      throw new Error(`Timeout waiting for local Hardhat node at ${url}`);
+    try {
+      const ok = await waitForRpc(url);
+      if (!ok) {
+        console.error(`Could not reach local Hardhat node at ${url} within timeout.`);
+        console.error('Please start a Hardhat node in a separate terminal: cd contracts && npx hardhat node');
+        process.exit(1);
+      }
+      console.log('Local node is responsive');
+    } catch (err) {
+      console.error('Error while waiting for local node:', err.message || err);
+      console.error('Please ensure a Hardhat node is running: cd contracts && npx hardhat node');
+      process.exit(1);
     }
-    console.log('Local node is responsive');
   }
 
   await hre.run('compile');
