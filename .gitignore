@@ -1,0 +1,59 @@
+# Node modules
+node_modules/
+
+# Build output
+/dist/
+/build/
+/.next/
+/.cache/
+
+# Solana/Anchor artifacts
+/target/
+/.anchor/
+/programs/prediction_market/target/
+/programs/prediction_market/.anchor/
+
+# Hardhat/Foundry artifacts
+artifacts/
+cache/
+contracts/artifacts/
+contracts/cache/
+
+# Environment files
+.env
+.env.*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# MacOS
+.DS_Store
+
+# VSCode
+.vscode/
+
+# Test coverage
+coverage/
+
+# Misc
+*.tsbuildinfo
+*.swp
+*.swo
+
+# IDE
+.idea/
+*.iml
+
+# Python
+__pycache__/
+*.pyc
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Local scripts output
+scripts/*.out
+scripts/*.log

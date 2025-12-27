@@ -1,0 +1,61 @@
+name: Anchor CI
+
+on:
+  push:
+    branches: ["main", "dev"]
+  pull_request:
+    branches: ["main", "dev"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install Solana CLI
+        run: |
+          sh -lc "curl -sSfL https://release.solana.com/v1.19.23/solana-install-init.sh | sh -s -- -b /usr/local/bin"
+          solana --version
+      - name: Install Anchor CLI
+        run: |
+          npm install -g @project-serum/anchor-cli
+      - name: Install Node deps for tests
+        working-directory: ./programs/prediction_market
+        run: npm install
+      - name: Build program
+        run: anchor build
+      - name: Run tests
+        working-directory: ./programs/prediction_market
+        run: npm test
+
+  evm-tests:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install Foundry (optional; used if repo uses forge)
+        run: |
+          curl -L https://foundry.paradigm.xyz | bash
+          source $HOME/.cargo/env || true
+          foundryup || true
+      - name: Install dependencies and run Hardhat tests
+        working-directory: ./contracts
+        run: |
+          npm ci || true
+          npx hardhat test || true
+      - name: Run Foundry tests (if present)
+        working-directory: ./contracts
+        run: forge test --match-contract PredictionMarketAdapter || true

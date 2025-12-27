@@ -1,0 +1,6 @@
+[programs.localnet]
+prediction_market = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkgSgK6z7uJc"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
